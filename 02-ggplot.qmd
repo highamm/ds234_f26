@@ -1,0 +1,74 @@
+---
+title: "Your Title"
+author: "Your Name"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 2.2: Basic Plot Structure
+
+A ggplot plot requires three things:
+
+1. the name of the data set (data = _____).
+
+2. an aesthetic mapping: maps variables in the data set to components of the plot.
+
+3. a geom (gives the plot type).
+
+```{r}
+library(tidyverse)
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+```
+
+## Section 2.3: Introduction to Plotting
+
+Single Quant. Variable:
+
+```{r}
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_histogram()
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+  geom_freqpoly(bins = 17)
+
+ggplot(data = stat113_df, aes(x = GPA)) +
+    geom_histogram(colour = "skyblue4", fill = "skyblue1", bins = 17) +
+    geom_freqpoly(bins = 17, colour = "skyblue3")
+```
+
+Single Cat. Variable
+
+```{r}
+ggplot(data = stat113_df, aes(x = Award)) +
+  geom_bar(colour = "tomato", fill = "coral")
+```
+
+Two Categorical Variables
+
+```{r}
+ggplot(data = stat113_df, aes(x = Year, fill = SocialMedia)) +
+  geom_bar() 
+
+ggplot(data = stat113_df, aes(x = Sex, fill = Sport)) +
+  geom_bar(position = "fill") +
+  labs(y = "Proportion")
+```
+
+One cat., one quant.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_boxplot()
+
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_violin()
+## see more shape
+
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_jitter(width = 0.10)
+## rough idea of sample size
+
+ggplot(data = stat113_df, aes(x = Sport, y = GPA)) +
+  geom_violin(colour = "red", fill = "orange")
+```
