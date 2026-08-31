@@ -72,3 +72,76 @@ ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
 ggplot(data = stat113_df, aes(x = Sport, y = GPA)) +
   geom_violin(colour = "red", fill = "orange")
 ```
+
+## Section 2.4: Practice
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df, aes(x = SocialMedia)) +
+  geom_bar()
+
+stat113_restructured <- stat113_df |> group_by(SocialMedia) |>
+  summarise(n_social = n())
+stat113_restructured
+
+ggplot(data = stat113_restructured, aes(x = SocialMedia)) +
+  geom_bar()
+## still counting up the number of rows each level 
+## of SocialMedia appears (it's now just 1 for each level)
+
+ggplot(data = stat113_restructured, aes(x = SocialMedia, y = n_social)) +
+  geom_col()
+## geom_col(): useful for bar plots when the counts are explicitly
+## given in another column.
+```
+
+Class Exercise 2
+
+```{r}
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+fitness_full
+ggplot(data = fitness_full, aes(x = distance, y = active_cals)) +
+  geom_point()
+```
+
+Class Exercise 3.
+
+```{r}
+ggplot(data = fitness_full, aes(x = Date, y = steps)) +
+  geom_line() +
+  geom_smooth()
+```
+
+Class Exercise 4.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_point() +
+  facet_wrap(~ Sex)
+## no, the relationship doesn't change based on Sex
+
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA, colour = Sex)) +
+  geom_point() 
+## same conclusion: no, the relationship does not change much based on Sex.
+
+## combo:
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA, colour = Sex, shape = Sport)) +
+  geom_point()
+
+## another option
+ggplot(data = stat113_df, aes(x = Exercise, y = GPA)) +
+  geom_point() +
+  facet_grid(Sex ~ Sport)
+## facet_grid can grid a couple of categorical variables to form the facets
+```
+
+Class Exercise 5.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
+  geom_boxplot(outlier.shape = 8)
+```
