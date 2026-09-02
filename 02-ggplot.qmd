@@ -145,3 +145,60 @@ Class Exercise 5.
 ggplot(data = stat113_df, aes(x = Award, y = Exercise)) +
   geom_boxplot(outlier.shape = 8)
 ```
+
+Your Turn 1.
+
+a. 20 rows (one per student) and at least one column (for the major).
+
+b. 3 rows (one for each level/category of major) and 2 columns (one column for the levels and one column for the counts).
+
+Your Turn 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = GPA, y = TV)) +
+  geom_point(aes(colour = Year))
+
+ggplot(data = stat113_df, aes(x = GPA, y = TV)) +
+  geom_point() +
+  facet_wrap(~ Year)
+
+## for this example, the faceted version looks better/cleaner.
+## more generally, the more levels that a categorical variable has, the worse colour becomes (harder to distinguish and plots look messier).
+
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point() +
+  facet_wrap(~ Sex)
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sex)) 
+```
+
+Your Turn 3.
+
+```{r}
+fitness_full
+
+## a
+ggplot(data = fitness_full, aes(x = distance)) +
+  geom_freqpoly(aes(colour = month))
+
+## b
+ggplot(data = fitness_full, aes(x = distance)) +
+  geom_histogram() +
+  facet_wrap(~ month)
+
+## c
+ggplot(data = fitness_full, aes(x = month, y = distance)) +
+  geom_boxplot()
+## for this exaqmple, boxplots look best, but it sure
+## would be nice to put the months in chronological order!
+```
+
+Your Turn 5.
+
+```{r}
+ggplot(data = stat113_df, aes(x = GPA, y = Exercise)) +
+  geom_line()
+
+## the line plot worked for the fitness full data set because there was exactly one y value for each unique x, and, the x's were app;roximately equally spaced. This happens the most when x is time!
+## this isn't the case for Exercise and GPA so a scatterplot is much better!
+```
