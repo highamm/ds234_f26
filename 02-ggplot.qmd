@@ -202,3 +202,62 @@ ggplot(data = stat113_df, aes(x = GPA, y = Exercise)) +
 ## the line plot worked for the fitness full data set because there was exactly one y value for each unique x, and, the x's were app;roximately equally spaced. This happens the most when x is time!
 ## this isn't the case for Exercise and GPA so a scatterplot is much better!
 ```
+
+## Section 2.6: More Practice
+
+```{r}
+stat113_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/stat113.csv")
+glimpse(stat113_df)
+## glimpse() is especially nice for data sets with a 
+## lot of columns
+```
+
+Class Exercise 1.
+
+```{r}
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt,
+                              colour = Sport)) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(data = stat113_df, aes(x = Wgt, y = Hgt)) +
+  geom_point(aes(colour = Sport)) +
+  geom_smooth()
+## moving colour = Sport to the geom_point() function
+## makes the colour aesthetic local, not global.
+## So, the points use the colour aesthetic but the 
+## smoother does not.
+
+```
+
+Class Exercise 2.
+
+```{r}
+ggplot(data = stat113_df, aes(x = TV)) +
+  geom_histogram(colour = "black", fill = "white")
+```
+
+Your Turn 1.
+
+a. No: method = "lm" should not be in aes()
+
+b. Correct.
+
+c. No: colour = "purple" should not be in aes().
+
+d. No: colour = groupvar needs to be in aes() since groupvar is a variable in the data set.
+
+e. Correct.
+
+f. No: colour = "purple" should not be in aes().
+
+Your Turn 2.
+
+Specify part (e) as only using local aesthetics (outside of a code chunk).
+
+e.
+ all aesthetics supplied locally:
+ 
+ggplot(data = toy_df) +
+  geom_point(aes(x = xvar, y = yvar), colour = "purple") +
+  geom_smooth(method = "lm", aes(x = xvar, y =yvar, colour = groupvar))
