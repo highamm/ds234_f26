@@ -1,0 +1,70 @@
+---
+title: "Chapter 3: Wrangling with dplyr"
+author: "Your Name"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 3.1
+
+## Section 3.2: Practice
+
+```{r}
+library(tidyverse)
+library(babynames)
+babynames
+```
+
+Class Exercise 1 and 2.
+
+```{r}
+babynames_m10 <- babynames |> filter(year == 2017 & sex == "M") |>
+  arrange(desc(n)) |>
+  slice(1:10)
+## 1:10 is 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+
+## class exercise 2.
+ggplot(data = babynames_m10, aes(x = name, y = n)) +
+  geom_col()
+```
+
+Class Exercises 3 and 4.
+
+```{r}
+babynames_matthew <- babynames |> filter(name == "Matthew" & sex == "M")
+ggplot(data = babynames_matthew, aes(x = year, y = n)) +
+  geom_line()
+```
+
+Your Turn 1 and Your Turn 2.
+
+Your Turn 1.
+
+```{r}
+babynames |> filter(year != 1945)
+
+babynames |> filter(n >= 400 & n <= 5000)
+
+
+```
+
+Your Turn 2.
+
+```{r}
+babynames_mh <- babynames |> filter((name == "Monica" | name == "Hilary") & sex == "F")
+ggplot(data = babynames_mh, aes(x = year, y = n)) +
+  geom_line(aes(colour = name))
+```
+
+Your Turn 3.
+
+```{r}
+babynames_5 <- babynames |> filter((name == "Matthew" & sex == "M") |
+                      (name == "Jessica" & sex == "F") |
+                      (name == "Ivan" & sex == "M") |
+                      (name == "Robin" & sex == "M") |
+                      (name == "Lillian" & sex == "F"))
+ggplot(data = babynames_5, aes(x = year, y = n)) +
+  geom_line(aes(colour = name))
+```
