@@ -68,3 +68,107 @@ babynames_5 <- babynames |> filter((name == "Matthew" & sex == "M") |
 ggplot(data = babynames_5, aes(x = year, y = n)) +
   geom_line(aes(colour = name))
 ```
+
+Your Turn 4.
+
+```{r}
+babynames_12 <- babynames |> filter(year == 1991 & sex == "M") |>
+  arrange(desc(n)) |>
+  slice(1:12) ## keep 12 most popular
+
+ggplot(data = babynames_12, aes(x = name, y = n)) +
+  geom_col(colour = "seagreen4", fill = "seagreen1")
+```
+
+## Section 3.4
+
+Class Exercise 1.
+
+```{r}
+slumajors_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/SLU_Majors_17_21.csv")
+
+slumajors_df <- slumajors_df |>
+  mutate(ntotal = nfemales + nmales) |>
+  mutate(percfemale = 100 * nfemales / (nfemales + nmales))
+
+slumajors_df <- slumajors_df |>
+  mutate(morewomen = if_else(percfemale > 50,
+                             true = "Yes",
+                             false = "No")) |>
+  mutate(large_majority =
+           case_when(percfemale >= 70 ~ "female",
+                     percfemale <= 30 ~ "male",
+                     percfemale > 30 & percfemale < 70 ~ "none")) 
+
+slumajors_df
+
+slumajors_df |> mutate(testcase = case_when(percfemale >= 40 ~ "Yes",
+                                            percfemale > 60 ~ "No"))
+## if a row satisfies more than one condition, then case_when() uses
+## the __first__ condition that's satisfied to determine the output
+
+```
+
+Class Exercise 2.
+
+```{r}
+## example of rank
+slumajors_df |> mutate(rank_percfemale = rank(percfemale)) |>
+  select(rank_percfemale, everything())
+## smallest value of percfemale gets a rank of 1,
+## second smallest value of percfemale gets a rank of 2, etc.
+
+slumajors_df |> mutate(rank_percfemale = rank(desc(percfemale))) |>
+  select(rank_percfemale, everything())
+## ranking percfemale so that the largest value gets rank of 1
+
+slumajors_df |> group_by(morewomen) |>
+  mutate(rank_percfemale = rank(percfemale)) |>
+  select(rank_percfemale, everything())
+## now ranking within each group established by the "morewomen" variable
+```
+
+```{r}
+babynames |> group_by(year, sex) |>
+  mutate(rank_pop = rank(desc(n))) |>
+  filter(rank_pop == 1) |>
+  ungroup() |> ## removes the year and sex grouping
+  group_by(name) |>
+  summarise(n_most_pop = n())  |> ## number of rows for each name
+  arrange(desc(n_most_pop))
+```
+
+Class Exercise 3.
+
+```{r}
+babynames |> group_by(year, sex) |>
+  filter(n == max(n)) |>
+ ## mutate(rank_pop = rank(desc(n))) |>
+ ## filter(rank_pop == 1) |>
+  ungroup() |> ## removes the year and sex grouping
+  group_by(name) |>
+  summarise(n_most_pop = n())  |> ## number of rows for each name
+  arrange(desc(n_most_pop))
+
+babynames |> group_by(year, sex) |>
+  arrange(desc(n)) |>
+  slice(1) |>
+ ## mutate(rank_pop = rank(desc(n))) |>
+ ## filter(rank_pop == 1) |>
+  ungroup() |> ## removes the year and sex grouping
+  group_by(name) |>
+  summarise(n_most_pop = n())  |> ## number of rows for each name
+  arrange(desc(n_most_pop))
+```
+
+Class Exercise 4.
+
+```{r}
+babynames_test <- babynames |>
+  group_by(year, sex) |> mutate(ntest = n / prop)
+babynames_test |> slice(1, 2, 3, 4, 5)
+
+## the issue is that we still have groups established (year and sex)
+## so we are actually getting the first 5 rows for each group
+276 * 5
+```
