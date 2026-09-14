@@ -172,3 +172,95 @@ babynames_test |> slice(1, 2, 3, 4, 5)
 ## so we are actually getting the first 5 rows for each group
 276 * 5
 ```
+
+Class Exercise 5.
+
+```{r}
+fitness_df <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv") |>
+  select(-stepgoal)
+fitness_df
+```
+
+```{r}
+fitness_df |> mutate(step_10 = if_else(steps >= 10000,
+                                       true = 1, 
+                                       false = 0)) |>
+  summarise(prop_10 = mean(step_10)) |>
+  select(prop_10, everything())
+## mean of a variable that is only 1's and 0's is the proportion of 1's.
+
+## b.
+
+fitness_df |> mutate(step_10 = if_else(steps >= 10000,
+                                       true = 1, 
+                                       false = 0)) |>
+  group_by(year) |>
+  summarise(prop_10 = mean(step_10)) |>
+  select(prop_10, everything())
+
+
+```
+
+Your Turn 2.
+
+```{r}
+toy_df <- tibble(x = c(NA, 3, 4, 7),
+                 y = c(1, 4, 3, 2),
+                 z = c("A", "A", "B", NA))
+toy_df
+
+## a
+toy_df |> mutate(test_x = x +5)
+## rows with NAs for a variable in a mutate will give an NA.
+
+## b
+toy_df |> arrange(x)
+toy_df |> arrange(desc(x))
+## NAs go at the end.
+
+## c
+toy_df |> filter(x > 5)
+## NAs get removed as part of this filter.
+
+## d
+toy_df |> summarise(median_x = median(x))
+## returns a missing value since at least one x is missing
+
+## if you want to drop the missing value
+toy_df |> filter(!is.na(x)) |>
+  summarise(median_x = median(x))
+## OR
+toy_df |> summarise(median_x = median(x, na.rm = TRUE))
+
+## E
+toy_df |> group_by(z) |>
+  summarise(median_x = median(x, na.rm = TRUE))
+## missing values become their own group
+```
+
+Your Turn 3. 
+
+a and b. Generally safe: we are not restructuring the data set, removing important information. we are just creating a new variable (mutate) or sorting the rows (arrange).
+
+c. not safe to do in general (removing data and overwriting the name of the original data frame means that you never have access to the data you removed again).
+
+d. not safe to do in general: you have access to the restructured summary but not the original data set anymore.
+
+e. similar to filter, not safe in general (unless you were absolutely sure you never needed access to those columns again).
+
+Your Turn 4.
+
+```{r}
+slumajors_df |>
+  summarise(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) 
+slumajors_df |>
+  mutate(meantotalmajor = mean(ntotal),
+            totalgrad = sum(ntotal)) |>
+  select(meantotalmajor, totalgrad, everything())
+
+## summarise() only keeps the variables specified in the summarise() statement
+## as well as any grouping variables whereas mutate() keeps all variables.
+
+## summarise() collapses this data to only keep a single row (since there is no grouping) whereas mutate() always preserves all rows in the data set.
+```
