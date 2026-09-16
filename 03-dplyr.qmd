@@ -264,3 +264,18 @@ slumajors_df |>
 
 ## summarise() collapses this data to only keep a single row (since there is no grouping) whereas mutate() always preserves all rows in the data set.
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

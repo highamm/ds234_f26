@@ -1,0 +1,45 @@
+---
+title: "Chapter 4: Communication"
+author: "Your Name"
+format: 
+  html:
+    embed-resources: true
+---
+
+## Section 4.4: Practice
+
+```{r}
+library(gapminder)
+library(tidyverse)
+country_df <- gapminder
+```
+
+Class Exercise 1.
+
+Hint: use a group aesthetic in your ggplot geom.
+
+```{r}
+## figuring out which countries we wnt to label
+country_df |> filter(continent == "Europe" & lifeExp < 50)
+## Turkey
+
+country_df |> filter(continent == "Africa" & lifeExp < 30)
+## Rwanda
+
+country_df |> filter(continent == "Asia" & year == 1977 & lifeExp < 40)
+## Cambodia
+
+## dplyr to make a data set that has rows for the three countries
+
+country_3 <- country_df |> filter(country == "Cambodia" | country == "Rwanda" | country == "Turkey")
+
+## next task: make a data set from country_3 that only has three rows (for our three labels)
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country)) +
+  facet_wrap(~ continent) +
+  geom_text(data = country_3, aes(label = country))
+
+## task: figure out what countries correspond to the three
+## "unusual" lines and to then directly label the plot
+## with the country's name on the lines.
+```
