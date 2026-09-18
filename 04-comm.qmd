@@ -1,14 +1,18 @@
 ---
 title: "Chapter 4: Communication"
 author: "Your Name"
+execute:
+  warning: false
 format: 
   html:
+    fig-height: 4
     embed-resources: true
 ---
 
 ## Section 4.4: Practice
 
 ```{r}
+#| echo: false
 library(gapminder)
 library(tidyverse)
 country_df <- gapminder
@@ -34,12 +38,78 @@ country_df |> filter(continent == "Asia" & year == 1977 & lifeExp < 40)
 country_3 <- country_df |> filter(country == "Cambodia" | country == "Rwanda" | country == "Turkey")
 
 ## next task: make a data set from country_3 that only has three rows (for our three labels)
+
+country_3_min <- country_3 |> group_by(country) |>
+  arrange(lifeExp) |>
+  slice(1)
+## OR
+country_3 |> group_by(country) |>
+  filter(lifeExp == min(lifeExp))
+
 ggplot(data = country_df, aes(x = year, y = lifeExp)) +
   geom_line(aes(group = country)) +
   facet_wrap(~ continent) +
-  geom_text(data = country_3, aes(label = country))
+  geom_text(data = country_3_min, aes(label = country))
 
 ## task: figure out what countries correspond to the three
 ## "unusual" lines and to then directly label the plot
 ## with the country's name on the lines.
+
+## instead of labeling the countries directly, try using colour
+## to distinguish these three countries of interest:
+## Hint: need to use a local data set as part of a second geom_line()
+ggplot(data = country_df, aes(x = year, y = lifeExp)) +
+  geom_line(aes(group = country), alpha = 0.2) +
+  facet_wrap(~ continent) +
+  geom_line(data = country_3, aes(colour = country),
+            linewidth = 1.5) +
+  scale_colour_viridis_d() +
+  theme_minimal()
+
+## alpha controls transparancy.
+## can use colour to emphasize a few interesting data points (countries).
+
+
 ```
+
+Class Exercise 8. Done above.
+
+## Your Turn 
+
+Your Turn 1.
+
+Outliers were removed and he did not record that he removed them.
+
+Using t.test() without writing down that that is the function that he used (and any arguments).
+
+changing the labels and limits using point and click is also not reproducible.
+
+Your Turn 2.
+
+Hint:
+
+```{r}
+#| eval: false
+## can add a column to the data set with mutate() where you 
+## just specify the values yourself
+## e.g., if df had just two rows:
+df |> mutate(label_var = c("label 1", "label 2"))
+```
+
+```{r}
+fitness_full <- read_csv("https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/higham_fitness_clean.csv",
+                         col_types = list(stepgoal = col_factor())) |>
+  mutate(weekend_ind = case_when(weekday == "Sat" | weekday == "Sun" ~ "weekend",
+                                 .default = "weekday"))
+
+fitness_label <- fitness_full |> filter(Date == "2019-04-14" | 
+                         Date == "2021-05-24") |>
+  mutate(event = c("half-marathon", "grand canyon"))
+ggplot(data = fitness_full,
+       aes(x = Date, y = steps)) +
+  geom_line() +
+  geom_text(data = fitness_label, aes(label = event))
+```
+
+Your Turn 3.
+
