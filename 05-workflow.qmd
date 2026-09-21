@@ -1,0 +1,48 @@
+---
+title: "Chapter 5: Workflow"
+author: "Your Name"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+## Section 5.7
+
+Class Exericse 1. Because you're not recording the packages that you've used in your script window (so that someone else looking at your analysis doesn't know what packages you've used).
+
+Class Exercise 2.
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+
+ggplot(data = mtcars, aes(x = hp, y = drat)) +
+  geom_point(aes(colour = factor(gear))) +
+  facet_wrap(~ cyl) +
+  geom_smooth()
+```
+
+Class Exercise 3.
+
+```{r}
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  group_by(species, island) |>
+  summarise(mean_flipper = mean(flipper_ratio, na.rm = TRUE)) |>
+  arrange(mean_flipper) |>
+  pivot_wider(names_from = c("species"), values_from = "mean_flipper")
+```
+
+Class Exercise 4.
+
+```{r}
+library(here)
+videogame_df <- read_csv(here("data/videogame_clean.csv"))
+
+## outliers are kept in
+videogame_df |> summarise(mean_pt = mean(median_playtime, na.rm = TRUE),
+                          median_pt = median(median_playtime, na.rm = TRUE))
+```

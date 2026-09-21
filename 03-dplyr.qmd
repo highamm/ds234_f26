@@ -266,8 +266,37 @@ slumajors_df |>
 ```
 
 
+Your Turn 5.
 
+```{r}
+babynames_distinct <- babynames |> group_by(year) |>
+  summarise(n_distinct = n())
 
+ggplot(data = babynames_distinct, aes(x = year, y = n_distinct)) +
+  geom_line()
+```
+
+Your Turn 6.
+
+```{r}
+babynames_distinct <- babynames |> group_by(year, sex) |>
+  summarise(n_distinct = n())
+
+ggplot(data = babynames_distinct, aes(x = year, y = n_distinct)) +
+  geom_line(aes(colour = sex))
+
+ggplot(data = babynames_distinct, aes(x = year, y = n_distinct)) +
+  geom_line() +
+  facet_wrap(~ sex)
+```
+
+Your Turn 7.
+
+```{r}
+babynames |> group_by(name) |>
+  summarise(total_births = sum(n)) |>
+  arrange(desc(total_births))
+```
 
 
 

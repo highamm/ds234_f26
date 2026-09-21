@@ -113,3 +113,16 @@ ggplot(data = fitness_full,
 
 Your Turn 3.
 
+```{r}
+mtcars_rows <- mtcars |> rownames_to_column() |> rename(car_name = rowname)
+mtcars_rows
+
+mtcars_lab <- mtcars_rows |> arrange(desc(mpg)) |>
+  slice(1)
+mtcars_rows |> filter(mpg == max(mpg))
+
+ggplot(data = mtcars_rows, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text(data = mtcars_lab, aes(label = car_name)) +
+  geom_point(data = mtcars_lab, shape = 1, size  = 3)
+```
