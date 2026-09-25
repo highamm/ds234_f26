@@ -45,4 +45,64 @@ videogame_df <- read_csv(here("data/videogame_clean.csv"))
 ## outliers are kept in
 videogame_df |> summarise(mean_pt = mean(median_playtime, na.rm = TRUE),
                           median_pt = median(median_playtime, na.rm = TRUE))
+
+## leave unfinished
 ```
+
+Class Exercise 5.
+
+```{r}
+library(tidyverse)
+library(here)
+evals_df <- read_csv(here("data/evals_prof_S21.csv"))
+evals_df
+```
+
+```{r}
+## how can I split the Term variable into a 
+## semester column and a year column?
+
+library(tidyverse)
+toy_reprex <- tibble(Term = c("F19", "F20", "S20", "S20"))
+toy_reprex
+```
+
+
+Your Turn 3.
+
+```{r}
+library(palmerpenguins)
+penguins |> mutate(flipper_ratio = flipper_length_mm / body_mass_g) |>
+  relocate(flipper_ratio) |>
+  filter(flipper_ratio > median(flipper_ratio, na.rm = TRUE)) |>
+  group_by(species) |>
+  summarise(count_var = n())
+```
+
+
+Your Turn 4.
+
+a. don't know about filter()
+
+```{r}
+library(tidyverse)
+
+reprex_df <- tibble(x = c(1, 5, 3, 6, 7, NA, 10),
+                    y = c(4, 1, 2, NA, 4, 7, 8))
+reprex_df
+
+## how can I remove the rows that have any missing values
+## for any variable in the data set?
+```
+
+Notes about here() and working directories.
+
+R project establishes that the working directory starts in the same folder as the R project.
+
+here() works with an R project. here() says when we read or write a data set to start where the R project is.
+
+for example,
+
+read_csv(here("data/alcohol.csv"))
+
+says to start looking for the data folder "here" at the r project location.
