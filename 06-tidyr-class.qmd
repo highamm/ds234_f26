@@ -1,0 +1,117 @@
+---
+title: "Chapter 6: `tidyr`"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Your Turn 1.
+
+```{r}
+baseball_df <- read_csv(here("data/mlb2016.csv"))
+baseball_df
+```
+
+First, the salary, total value, and avg annual columns all contain units ($).
+
+The `Years` column contains really three different variables: the contract duration, the start year, and the end year (for tidy data, each column should contain just one variable, not three).
+
+Your Turn 2 and Your Turn 3 (fix the Years column so that it's tidy).
+
+```{r}
+baseball_separated <- baseball_df |> separate(Years, c("duration", "years"),
+                        sep = " ") |>
+  separate(years, c("start", "end"), sep = "-")
+## class exercise 3: some years were single contract years without a dash
+## to separate by, which is what the wraning says.
+```
+
+Your Turn 4.
+
+```{r}
+baseball_tidy <- baseball_separated |>
+  mutate(Salary = parse_number(Salary),
+         Total.Value = parse_number(Total.Value),
+         Avg.Annual = parse_number(Avg.Annual),
+         Start = parse_number(start),
+         End = parse_number(end))
+baseball_tidy |> view()
+## parse_number(x) says to only keep numbers in the column x and drop
+## everything else (letters, symbols, anything that's not a number)
+```
+
+Your Turn 5.
+
+```{r}
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_boxplot(colour = "skyblue4", fill = "skyblue1") +
+  theme_minimal()
+
+## with salary having dollar signs
+##ggplot(data = baseball_df, aes(x = POS, y = Salary)) +
+##  geom_boxplot(colour = "skyblue4", fill = "skyblue1") +
+##  theme_minimal()
+
+## in general, bar plots are not good to make when we have a categorical
+## and a quantitative variable. They are useful for counts.
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_col()
+
+ggplot(data = baseball_tidy, aes(x = POS, y = Salary)) +
+  geom_jitter(width = 0.05, aes(colour = POS), show.legend = FALSE) +
+  scale_colour_viridis_d() +
+  theme_minimal()
+## let's you see sample size!
+## show.legend = FALSE removes the colour legend: in this case, the colour is redundant with the x-axis.
+```
+
+Your Turn 6.
+
+```{r}
+nfl_df <- read_csv(here::here("data/nfl_salary.csv"))
+nfl_df
+```
+
+variables are position and salary. Each of these two variables should be in their own column (not spread out across a bunch of different columns).
+
+Your Turn 7.
+
+```{r}
+nfl_df |> pivot_longer(c(Cornerback, `Defensive Lineman`,
+                         Linebacker, `Offensive Lineman`))
+
+nfl_tidy <- nfl_df |> pivot_longer(2:11, names_to = "position",
+                                   values_to = "salary")
+nfl_tidy
+```
+
+Your Turn 8.
+
+```{r}
+nfl_max <- nfl_tidy |> group_by(position, year) |>
+  summarise(max_salary = max(salary))
+
+nfl_tidy |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1)
+
+nfl_tidy |> group_by(position, year) |>
+  filter(salary == max(salary))
+
+ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
+  geom_line(aes(colour = position))
+## too many colours
+
+ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+
+```
