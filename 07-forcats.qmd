@@ -1,0 +1,36 @@
+---
+title: "Chapter 7: `forcats`"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Class Exercise 1. Because defense is quantitative, plotting just the median removes the spread of the distribution, the shape of the distribution, etc. In general, bar plots and lollipop plots are used to show counts of a categorical variable or totals (not a quantitative variable).
+
+Class Exercise 4.
+
+```{r}
+path <- "https://raw.githubusercontent.com/highamm/ds234_quarto/main/data_online/"
+medals_df <- read_csv(paste0(path, "medals.csv"))
+medals_df
+```
+
+Try steps 1 and 2:
+
+```{r}
+medals_type <- medals_df |> group_by(medal_type, country) |>
+  summarise(n_medals = n())
+
+medals_total <- medals_df |> group_by(country) |>
+  summarise(n_total = n()) |>
+  arrange(desc(n_total)) |>
+  slice(1:20) 
+```

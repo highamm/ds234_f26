@@ -156,14 +156,14 @@ Your Turn 8.
 
 ```{r}
 nfl_max <- nfl_tidy |> group_by(position, year) |>
-  summarise(max_salary = max(salary))
+  summarise(max_salary = max(salary, na.rm = TRUE))
 
 nfl_tidy |> group_by(position, year) |>
   arrange(desc(salary)) |>
   slice(1)
 
 nfl_tidy |> group_by(position, year) |>
-  filter(salary == max(salary))
+  filter(salary == max(salary, na.rm = TRUE))
 
 ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
   geom_line(aes(colour = position))
@@ -173,4 +173,34 @@ ggplot(data = nfl_max, aes(x = year, y = max_salary)) +
   geom_line() +
   facet_wrap(~ position)
 
+```
+
+Your TUrn 9. max salary is heavily dependent on a single player.
+
+Your Turn 10. try plotting the average of the highest 32 salaries for each position in each year.
+
+```{r}
+nfl_mean32 <- nfl_tidy |> group_by(position, year) |>
+  arrange(desc(salary)) |>
+  slice(1:32) |>
+  summarise(mean_sal = mean(salary))
+
+nfl_adj <- nfl_mean32 |> filter(year == 2011 | year == 2018) |>
+  mutate(adj_salary = if_else(year == 2011,
+                              true = mean_sal * 1.169,
+                              false = mean_sal))
+ggplot(data = nfl_adj, aes(x = year, y = adj_salary)) +
+  geom_line() +
+  facet_wrap(~ position)
+```
+
+Your Turn 11.
+
+```{r}
+nfl_rank <- nfl_tidy |> filter(year == 2018) |>
+  group_by(position) |>
+  mutate(rank_sal = rank(desc(salary)))
+ggplot(nfl_rank, aes(x = rank_sal, y = salary)) +
+  geom_line() +
+  facet_wrap(~ position)
 ```
