@@ -13,6 +13,65 @@ library(tidyverse)
 library(here)
 ```
 
+## Section 6.4: Practice
+
+```{r}
+prices_df <- read_csv(here("data/UBSprices2.csv"))
+prices_df
+```
+
+Class Exercise 2.
+
+This data is not tidy because every variable in the data set (year, commodity, price) is not stored in its own column. 
+
+in the plot:
+
+aes(x = year, y = rice_price)
+
+Class Exercise 3.
+
+```{r}
+prices_tidy <- prices_df |> pivot_longer(2:7, names_to = "commodity_year", 
+                          values_to = "prices") |>
+  separate(commodity_year, c("commodity", "year"),
+           sep = -4)
+prices_tidy_rice <- prices_tidy |> filter(commodity == "rice")
+
+ggplot(data = prices_tidy_rice, aes(x = year, y = prices)) +
+  geom_line(aes(group = city))
+```
+
+Class Exercise 4.
+
+```{r}
+prices_tidy
+
+prices_amsterdam <- prices_tidy |> filter(city == "Amsterdam")
+
+ggplot(data = prices_amsterdam, aes(x = year, y = prices)) +
+  geom_line(aes(colour = commodity, group = commodity)) +
+  scale_colour_viridis_d(end = 0.9) +
+  theme_minimal()
+```
+
+Class Exercise 5 and 6.
+
+```{r}
+mortality_df <- read_csv(here("data/under5mortality.csv"))
+mortality_df
+
+mortality_tidy <- mortality_df |> pivot_longer(2:217, names_to = "year",
+                                               values_to = "mortality") |>
+  mutate(year = as.numeric(year)) |>
+  rename(country = `Under five mortality`)
+mortality_tidy
+
+ggplot(data = mortality_tidy, aes(x = year, y = mortality)) +
+  geom_line(aes(group = country), alpha = 0.15)
+```
+
+Class Exercise 7. Overall trend is decreasing and yes, every country does seem to be decreasing. Some of the lines are flat until 1900: one hypothesis is that the data uses the average mortality in that century for those countries and uses that value for every single year in that century.
+
 Your Turn 1.
 
 ```{r}

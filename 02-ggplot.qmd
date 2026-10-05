@@ -40,7 +40,13 @@ ggplot(data = stat113_df, aes(x = GPA)) +
 Single Cat. Variable
 
 ```{r}
+stat113_df <- stat113_df |> 
+  mutate(year_ordered = fct_relevel(Year, c("FirstYear", "Sophomore",
+                                            "Junior", "Senior")))
 ggplot(data = stat113_df, aes(x = Award)) +
+  geom_bar(colour = "tomato", fill = "coral")
+
+ggplot(data = stat113_df, aes(x = year_ordered)) +
   geom_bar(colour = "tomato", fill = "coral")
 ```
 
