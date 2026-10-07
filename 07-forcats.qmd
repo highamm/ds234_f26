@@ -33,4 +33,27 @@ medals_total <- medals_df |> group_by(country) |>
   summarise(n_total = n()) |>
   arrange(desc(n_total)) |>
   slice(1:20) 
+
+## step 3
+medals_joined <- semi_join(medals_type, medals_total,
+                           join_by(country == country))
+medals_joined
+
+## step 4 and step 5
+## geom_tile() with an x aes, y aes, and fill aes
+
+## medal type should be gold, silver, bronze
+## country should be ordered from most medals to least
+
+medals_joined <- medals_joined |>
+  ungroup() |>
+  mutate(country_ord = fct_reorder(country, n_medals, .fun = sum)) |>
+  mutate(medal_type = fct_relevel(medal_type,
+                                  c("Gold Medal", "Silver Medal",
+                                    "Bronze Medal")))
+
+ggplot(data = medals_joined, aes(x = medal_type, y = country_ord,
+                                 fill = n_medals)) +
+  geom_tile() +
+  scale_fill_viridis_c()
 ```
