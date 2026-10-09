@@ -15,6 +15,34 @@ library(here)
 
 Class Exercise 1. Because defense is quantitative, plotting just the median removes the spread of the distribution, the shape of the distribution, etc. In general, bar plots and lollipop plots are used to show counts of a categorical variable or totals (not a quantitative variable).
 
+Class Exercise 3.
+
+```{r}
+pokemon_df <- read_csv(here("data/pokemon_allgen.csv")) |>
+  mutate(Generation_cat = factor(Generation))
+
+pokemon_nodup <- pokemon_df |> group_by(`#`) |> slice(1) ## |>
+  ## ungroup()
+pokemon_long <- pokemon_nodup |>
+  pivot_longer(c(`Type 1`, `Type 2`),
+               names_to = "Number",
+               values_to = "Type")
+
+pokemon_long <- pokemon_long |>
+  filter(!is.na(Type)) |>
+  mutate(Type_Deford = fct_reorder(.f = Type, .x = Defense,
+                                   .fun = median))
+ggplot(data = pokemon_long, aes(x = Type_Deford,
+                               y = Defense)) +
+  geom_boxplot() + 
+  coord_flip()
+
+## forcats functions do not work well with grouped data frames (will
+## try to reorder/relevel/whatever within each group which does not
+## make sense)
+
+```
+
 Class Exercise 4.
 
 ```{r}
@@ -56,4 +84,50 @@ ggplot(data = medals_joined, aes(x = medal_type, y = country_ord,
                                  fill = n_medals)) +
   geom_tile() +
   scale_fill_viridis_c()
+```
+
+Your Turn
+
+```{r}
+standings_df <- read_csv(here("data/standings.csv"))
+standings_df |> relocate(playoffs)
+```
+
+Your Turn 1
+
+```{r}
+table(standings_df$team_name)
+```
+
+Your Turns 2 through 5
+
+```{r}
+standings_clean <- standings_df |>
+  mutate(team_name = fct_recode(team_name, 
+                                Commanders = "Redskins")) |> ## your turn 2
+  unite("franchise", c(team, team_name), sep = " ") |> ## your turn 3
+  mutate(franchise = fct_collapse(franchise,
+                                  `San Diego / LA Chargers` = c("San Diego Chargers",
+                                                                "Los Angeles Chargers"),
+                                  `St. Louis / LA Rams` = c("St. Louis Rams",
+                                                            "Los Angeles Rams")))
+standings_clean
+```
+
+Your Turn 5.
+
+```{r}
+standings_top10 <- standings_clean |> 
+  filter(playoffs == "Playoffs") |>
+  group_by(franchise) |>
+  summarise(n_playoffs = n()) |>
+  arrange(desc(n_playoffs)) |>
+  slice(1:10) |>
+  mutate(franchise = fct_reorder(franchise, n_playoffs))
+
+ggplot(data = standings_top10, aes(x = n_playoffs, y = franchise)) +
+  geom_segment(aes(x = 0, xend = n_playoffs, y = franchise, yend = franchise),
+               colour = "seagreen4") +
+  geom_point(colour = "seagreen1", size = 2) +
+  theme_minimal()
 ```
