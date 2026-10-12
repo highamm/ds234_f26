@@ -1,0 +1,106 @@
+---
+title: "Chapter 8: Base R"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+Class Exercise 1.
+
+```{r}
+fitness_df <- read_csv(here("data/higham_fitness_notclean.csv"))
+fitness_df
+
+weekend_vec <- c("Sat", "Sun")
+weekend_vec
+weekday_vec <- c("Mon", "Tue", "Wed", "Thu", "Fri")
+
+fitness_df |> mutate(weekend_ind = if_else(weekday %in% weekday_vec,
+                                           true = "a weekday",
+                                           false = "a weekend")) |>
+  relocate(weekend_ind)
+## weekday %in% weekday_vec is equivalent to weekday == "Mon" | weekday == "Tue"......
+
+```
+
+Class Exercise 2.
+
+```{r}
+set.seed(15125141)
+toy_df <- tibble(xvar = rnorm(100, 3, 4),
+                 yvar = rnorm(100, -5, 10),
+                 group1 = sample(c("A", "B", "C"), size = 100, replace = TRUE),
+                 group2 = sample(c("Place1", "Place2", "Place3"), size = 100,
+                                 replace = TRUE))
+toy_df
+
+table(toy_df$group1)
+
+toy_df |> group_by(group1) |> summarise(count = n()) |>
+  pivot_wider(names_from = "group1", values_from = "count")
+  
+table(toy_df$group1, toy_df$group2)
+
+toy_df |> group_by(group1, group2) |> summarise(count = n()) |>
+  ungroup() |>
+  pivot_wider(names_from = "group2", values_from = "count")
+```
+
+Class Exercise 3.
+
+
+```{r}
+grades_df <- structure(list(section = c(1030, 1030, 1030, 1030, 1030, 1030, 
+1030, 1030, 1030, 1030, 1030, 1030, 1030, 1030, 1030, 1030, 1030, 
+1030, 1030, 1030, 1030, 1030, 1030, 1030, 1030, 1140, 1140, 1140, 
+1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 
+1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140, 1140
+), grade = c("3.5", "3.5", "3.75", "2.5", "3.75", "3.75", "3", 
+"3.5", "4", "3.75", "3", "3.75", "3", "3", "3.25", "2.5", "3.25", 
+"3.5", "2.25", "4", "2.5", "3.75", "0", "4", "3.75", "3.25", 
+"4", "3.75", "2.75", "2.5", "3.75", "3.75", "3.5", "4", "3.25", 
+"3.75", "3.5", "1.75", "4", "3", "2.75", "0", "3.75", "3.5", 
+"3.75", "1.75", "3.5", "3.25", "3.25", "4")), class = c("tbl_df", 
+"tbl", "data.frame"), row.names = c(NA, -50L))
+
+grades_df
+```
+
+a and b.
+
+```{r}
+grades_df |> 
+  mutate(grade = as.numeric(grade)) |> ## grade must be numeric
+  group_by(section) |>
+  summarise(mean_grade = mean(grade))
+```
+
+c and d.
+
+```{r}
+grades_df <- grades_df |> mutate(grade = as.numeric(grade),
+                                 section = as.factor(section))
+## grade must be numeric, section must be character or factor.
+ggplot(data = grades_df, aes(x = section, y = grade)) +
+  geom_boxplot(outlier.shape = 8)
+```
+
+Class Exercise 5.
+
+a. character
+
+b. factor (only three different levels)
+
+c. integer
+
+d. double
+
+e. logical or factor 

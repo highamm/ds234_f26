@@ -1,0 +1,9 @@
+---
+title: "Chapter 11: Data Import"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
