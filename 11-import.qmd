@@ -111,3 +111,67 @@ read_delim(here("data/birthdays.txt"), delim = " - ",
   mutate(time = parse_number(time))
 
 ```
+
+Class Exercise 2.
+
+```{r}
+library(readxl)
+library(tidyverse)
+
+## read_excel() reads in an .xlsx Excel file 
+read_excel(here::here("data/evals_prof.xlsx"))
+
+## class exercise 3.
+read_excel(here::here("data/evals_prof.xlsx"), sheet = 2)
+
+## pkgname::functionname uses the functionname() function without
+## loading in pkgname with library(pkgname)
+```
+
+Class Exercise 4.
+
+```{r}
+library(rvest)
+url1 <- "https://en.wikipedia.org/wiki/Josh_Allen_(quarterback)"
+tab_allen_stats <- read_html(url1) |> html_nodes("table")
+allen_df <- tab_allen_stats[[6]] |> html_table()
+allen_df
+
+## these don't work because there are duplicated column names
+## allen_df |> slice(3)
+## allen_df |> filter(Fumbles == "0")
+
+allen_stats <- tab_allen_stats[[6]] |> html_table() 
+allen_stats
+
+library(janitor)
+allen_stats |> row_to_names(1) |> clean_names()
+```
+
+Class Exercise 5.
+
+```{r}
+tennis_url <- "https://en.wikipedia.org/wiki/Current_tennis_rankings"
+tennis_tables <- read_html(tennis_url) |> html_nodes("table")
+
+rankings_table <- tennis_tables[[2]] |> html_table()
+rankings_df <- rankings_table |> row_to_names(1) |> clean_names()
+
+rankings_clean <- rankings_df |> mutate(points = parse_number(points)) |>
+  mutate(player = fct_reorder(player, points))
+ggplot(data = rankings_clean, aes(x = points, y = player)) +
+  geom_col(aes(fill = player), show.legend = FALSE) +
+  scale_fill_viridis_d() +
+  theme_minimal()
+```
+
+Your Turn 1 OR Your Turn 2
+
+some analysis with Your Turn 3
+
+```{r}
+url_bb <- "https://saintsathletics.com/sports/baseball/stats/2026"
+
+bb_tabs <- read_html(url_bb) |> html_nodes("table")
+bb_tabs[[3]][3]
+```
