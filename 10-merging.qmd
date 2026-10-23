@@ -1,0 +1,52 @@
+---
+title: "Chapter 10: Data Merging"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+Class Exercise 0.
+
+a. 5 rows
+
+b. 6 rows
+
+c. 8 rows
+
+d. 3 rows
+
+a-d would have three columns
+
+e. 3 rows
+
+f. 2 rows
+
+e-f would have two columns
+
+
+Your Turn 1.
+
+a. true
+
+b. true
+
+c. false
+
+Your Turn 2.
+
+a. 6 rows
+
+b. 8 rows.
+
+c. 10 rows (A, A, C, C, F, F, B, D, D, D)
+
+d. 4 rows (A, A, C, C)
+
+e. 4 rows (A, A, C, C)
+
+f. 2 rows (F, F)
+
+

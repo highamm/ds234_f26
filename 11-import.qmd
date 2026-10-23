@@ -173,5 +173,5 @@ some analysis with Your Turn 3
 url_bb <- "https://saintsathletics.com/sports/baseball/stats/2026"
 
 bb_tabs <- read_html(url_bb) |> html_nodes("table")
-bb_tabs[[3]][3]
+bb_tabs[[3]] |> html_table()
 ```
