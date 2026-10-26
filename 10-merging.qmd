@@ -26,6 +26,78 @@ f. 2 rows
 
 e-f would have two columns
 
+Class Exercise 1. Since bind_cols() just combines two data frames by putting them side-by-side, the observations must be in the same order in each of the two data frames.
+
+Class Exercise 2.
+
+```{r}
+library(here)
+library(tidyverse)
+slumajors_df <- read_csv(here("data/SLU_Majors_17_21.csv"))
+collegemajors_df <- read_csv(here("data/college-majors.csv"))
+glimpse(slumajors_df)
+glimpse(collegemajors_df)
+
+left_join(slumajors_df, collegemajors_df, join_by(Major == Major))
+## keys must match exactly for the join to work
+## (here, they don't match because they are in title case in one
+## data set and all caps in the other)
+```
+
+Class Exercise 3.
+
+```{r}
+imdb_episodes <- read_csv(here::here("data/imdb_episodes.csv"))
+imdb_info <- read_csv(here::here("data/imdb_info.csv"))
+imdb_showrating <- read_csv(here::here("data/imdb_showrating.csv"))
+```
+
+The key is a unique identification number for the television show: `show_id` in `imdb_episodes` and `parentTconst` in the other two data sets.
+
+Class Exercises 4 through 8
+
+Class Exercise 4.
+
+```{r}
+show_info <- bind_cols(imdb_info, imdb_showrating)
+## see class exercise 1.
+## safer option would be to use a join with the parentTconst key
+```
+
+Class Exercise 5.
+
+```{r}
+left_join(imdb_episodes, show_info, join_by(show_id == parentTconst...1))
+```
+
+Dropping any tv show that is in show_info that does not have episode ratings in imdb_episodes.
+
+Class Exercise 6.
+
+```{r}
+left_join(show_info, imdb_episodes, join_by(parentTconst...1 == show_id))
+
+```
+
+any shows that do not appear in show info but that have episode ratings in the imdb_epiodes.
+
+Class Exercise 7.
+
+```{r}
+imdb_ep10 <- imdb_episodes |> group_by(show_id) |>
+  summarise(n = n()) |>
+  filter(n > 10)
+
+semi_join(show_info, imdb_ep10, join_by(parentTconst...1 == show_id))
+```
+
+Class Exercise 8.
+
+```{r}
+imdb_episodes
+show_pop <- show_info |> filter(averageRating >= 8 & numVotes >= 200000)
+semi_join(imdb_episodes, show_pop, join_by(show_id == parentTconst...1))
+```
 
 Your Turn 1.
 
