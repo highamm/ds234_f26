@@ -121,4 +121,14 @@ e. 4 rows (A, A, C, C)
 
 f. 2 rows (F, F)
 
+Your Turn 3.
 
+a. 300 rows
+
+b. 5 rows
+
+c. 285 rows (start with the 300 rows from courses_df. keep any of these rows that do not have a matching key with info_df. there are 285 of these rows since 15 do have a matching key)
+
+d. 15 rows
+
+e. 310 rows (15 rows from inner_join plus the 285 rows from courses df that don't have the matching key in info_df plus the 10 rows in info_df that don't have the matching key in courses_df).
