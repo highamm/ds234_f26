@@ -1,0 +1,76 @@
+---
+title: "Chapter 12: k-nearest-neighbors Classification"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+Section 12.2
+
+```{r}
+set.seed(1119)
+library(tidyverse)
+library(here) 
+
+pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
+  filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                                 (max(.x) - min(.x)))) 
+## for any numeric variable in the data set (where(is.numeric))
+## apply the formula x - min(x) / (max(x) - min(x))
+```
+
+```{r}
+train_sample <- pokemon |>
+  slice_sample(n = 75)
+
+test_sample <- anti_join(pokemon, train_sample)
+
+library(GGally)
+ggpairs(data = train_sample, columns = c(4, 5, 6, 3))
+```
+
+for association with type, we want to look at the last column of boxplots.
+
+the diagonal shows density plots (smoothed histograms) for quantitative variables and a bar plot for categorical variables.
+
+definitely defense (since, on average, steel type pokemon have higher defense than the other three types), but attack and hp also look like they are mildly associated with type. So, all three might be good to include initially!
+
+```{r}
+ggpairs(data = train_sample, columns = c(7, 8, 9, 3))
+```
+
+```{r}
+library(kknn)
+
+knn_mod <- kknn(Type ~ Attack + Defense + Speed, train = train_sample,
+                test = test_sample, k = 9)
+knn_mod
+## errors because Type must be <fct>, not <chr>
+
+set.seed(1119)
+
+pokemon <- read_csv(here("data", "pokemon_full.csv")) |>
+  filter(Type %in% c("Steel", "Dark", "Fire", "Ice")) |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                                 (max(.x) - min(.x)))) |>
+  mutate(Type = as.factor(Type))
+## now Type is a factor!
+
+train_sample <- pokemon |>
+  slice_sample(n = 75)
+
+test_sample <- anti_join(pokemon, train_sample)
+
+knn_mod <- kknn(Type ~ Attack + Defense + Speed, train = train_sample,
+                test = test_sample, k = 9)
+## works now since Type is a factor!
+knn_mod
+
+knn_mod$fitted.values
+## a vector of predicted classes for all of the pokemon in
+## the test sample
+```
