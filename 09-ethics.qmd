@@ -1,0 +1,25 @@
+---
+title: "Chapter 9: Ethics"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+Class Exercise 1. Just because you do not put your name on something ( a form, healthcare, etc.) does not necessarily mkean that it can't be traced back to you if you provide enough identifying information.
+
+Class Exercise 2. (b) and (d) have too much identifying information beyond course grade and course grade is sensitive to share. (a) has a little risk but (c) does not have sensitive information so would be fine.
+
+Your Turn 1. Hypothesis generation (similar DATA/STAT 234) you are using data to come up with one or more hypotheses that you can test in the future. Hypothesis confirmation (similar STAT 113) you are using the data to test a specific hypothesis that was made prior to looking at the data.
+
+Your Turn 2. for generation, you can use each data point as many times as you want. For confirmation, you can use each data point just once.
+
+Your Turn 3.
+
+a. hypothesis confirmation.
+
+b. hypothesis generation.
+
+c. leans toward generation but which framework you're in is not always clear-cut.

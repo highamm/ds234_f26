@@ -74,3 +74,67 @@ knn_mod$fitted.values
 ## a vector of predicted classes for all of the pokemon in
 ## the test sample
 ```
+
+## Section 12.3: Evaluating the Model
+
+```{r}
+table(knn_mod$fitted.values, test_sample$Type) 
+```
+
+Exercise 2. THere were 12 fire pokemon in the test sample that the model correctly classified as fire.
+
+Exercise 3. There were 3 dark type p[okemon in the test sample that the model incorrectly classified as ice.
+
+Exericse 4. There were 0 dark type pokemon in the test sample that the model incorrectly classified as steel.
+
+Exercise 5.
+
+__Classification Rate__: number of correct classifications divided by the total number in the test sample.
+
+```{r}
+(2 + 12 + 1 + 5) / 45
+## classification rate is 0.444
+
+tab <- table(knn_mod$fitted.values, test_sample$Type) 
+sum(diag(tab)) / sum(tab)
+```
+
+Exercise 6.
+
+```{r}
+knn_mod <- kknn(Type ~ Attack + Defense + Speed +SpAtk + SpDef,
+                train = train_sample,
+                test = test_sample, k = 4)
+## works now since Type is a factor!
+knn_mod
+
+tab <- table(knn_mod$fitted.values, test_sample$Type) 
+sum(diag(tab)) / sum(tab)
+```
+
+Exercise 7.
+
+```{r}
+## baseline classification rate is a classification rate from just
+## classifying every observation in the test sample as the most
+## common level found in the training sample.
+
+train_sample
+test_sample
+
+## 1. use the training sample to figure out the most common type.
+train_sample  |> group_by(Type) |>
+  summarise(n = n()) |>
+  arrange(desc(n))
+
+## most common type in the training sample is Fire
+
+## 2. use the test sample to calculate the proportion of pokemon
+## that match the most common type in the training sample.
+test_sample |>
+  group_by(Type) |>
+  summarise(n_type = n()) |>
+  ungroup() |>
+  summarise(prop = 16 / sum(n_type))
+```
+
