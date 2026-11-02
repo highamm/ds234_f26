@@ -123,7 +123,7 @@ train_sample
 test_sample
 
 ## 1. use the training sample to figure out the most common type.
-train_sample  |> group_by(Type) |>
+train_sample |> group_by(Type) |>
   summarise(n = n()) |>
   arrange(desc(n))
 
