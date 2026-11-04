@@ -136,5 +136,70 @@ test_sample |>
   summarise(n_type = n()) |>
   ungroup() |>
   summarise(prop = 16 / sum(n_type))
+
+## slightly more reproducible
+test_sample |>
+  mutate(fire_ind = if_else(Type == "Fire",
+                            true = 1, 
+                            false = 0)) |>
+  relocate(fire_ind) |> ## select(fire_ind, everything())
+  summarise(prop_fire = mean(fire_ind))
 ```
 
+Exercise 8.
+
+smaller $k$ means that you are using only the pokemon that are most similar to a particular test pokemon when classifying. But, the disadvantage of making $k$ too small is that there might be a lot of variability if, for instance, $k$ is only 1 or 2. This is what's called the "bias-variance trade-off."
+
+Class Exercises
+
+```{r}
+library(tidyverse)
+
+pokemon <- read_csv(here::here("data/pokemon_full.csv")) |>
+  mutate(Type = as.factor(Type))
+set.seed(1119)
+
+## scale the quantitative predictors
+pokemon_scaled <- pokemon |>
+  mutate(across(where(is.numeric), ~ (.x - min(.x)) /
+                  (max(.x) - min(.x))))
+
+train_sample <- pokemon_scaled |>
+  slice_sample(n = 550)
+test_sample <- anti_join(pokemon_scaled, train_sample)
+
+library(kknn)
+
+knn_mod <- kknn(Type ~ HP + Attack + Defense + Speed + SpAtk + SpDef + height + weight,
+                train = train_sample, test = test_sample, k = 9)
+knn_mod
+
+tab <- table(knn_mod$fitted.values, test_sample$Type)
+sum(diag(tab)) / sum(tab)
+```
+
+```{r}
+get_class_rate <- function(k_val) {
+  knn_mod <- kknn(Type ~ HP + Attack + Defense + Speed + SpAtk + SpDef + height + weight,
+                  train = train_sample, test = test_sample, k = k_val)
+  
+  tab <- table(knn_mod$fitted.values, test_sample$Type)
+  class_rate <- sum(diag(tab)) / sum(tab)
+  
+  return(class_rate)
+}
+get_class_rate(k_val = 30)
+
+kvec <- 1:60
+class_rates <- map_dbl(kvec, get_class_rate)
+
+class_df <- tibble(kvec, class_rates)
+class_df
+
+## make a line plot fo the classifications rate
+## write code to figure out which k value has the maximum classification
+## rate.
+ggplot(data = class_df, aes(x = kvec, y = class_rates)) +
+  geom_line()
+class_df |> filter(class_rates == max(class_rates))
+```
