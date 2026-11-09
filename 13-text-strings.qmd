@@ -1,0 +1,95 @@
+---
+title: "Chapter 13: tidytext and stringr"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+## Section 13.2: Introduction to `stringr`
+
+```{r}
+library(here)
+library(tidyverse)
+med_djok_df <- read_csv(here("data/med_djok.csv"))
+med_djok_df
+```
+
+```{r}
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE)
+## keep only rows where the point ends with the @ symbol
+## (so only rows that have points that end in an unforced error)
+```
+
+```{r}
+med_djok_df |> filter(str_detect(point, pattern = "@") == TRUE) |>
+  ## keep only rows where point has an @ in it
+  mutate(error_type = case_when(str_detect(point, pattern = "d@") ~ "deep error",
+                                str_detect(point, pattern = "w@") ~ "wide error",
+                                str_detect(point, pattern = "n@") ~ "net error")) |>
+  ## call a point that is d@ a "deep error", call a point that is w@ a 
+ ## "wide error", and call a point that is n@ a "net error"
+  group_by(PtWinner, error_type) |>
+  summarise(n_errors = n())
+  ## for each point winner and error type, give me the count
+```
+
+Exercise 4.
+
+^something means "starts with the word something"
+
+```{r}
+med_djok_df |>
+  mutate(serve_location = case_when(str_detect(point, "^4") ~ "wide",
+                                    str_detect(point, "^5") ~ "body",
+                                    str_detect(point, "^6") ~ "down the center")) |>
+  relocate(serve_location)
+```
+
+Class Exercise 1.
+
+```{r}
+library(schrute)
+schrute::theoffice
+
+library(tidytext)
+kevin_unnested <- theoffice |>
+  filter(character == "Kevin") |>
+  unnest_tokens("words", input = "text") |>
+  relocate(words)
+
+stop_words
+
+extra_stop <- tibble(word = c("yeah", "hey", "gonna"))
+
+kevin_nostop <- anti_join(kevin_unnested, stop_words, join_by(words == word)) |>
+  anti_join(extra_stop, join_by(words == word))
+
+
+kevin_top25 <- kevin_nostop |> group_by(words) |>
+  summarise(n_say = n()) |>
+  arrange(desc(n_say)) |>
+  slice(1:25) |>
+  mutate(words = fct_reorder(words, n_say))
+
+ggplot(data = kevin_top25, aes(x = n_say, y = words)) +
+  geom_col(colour = "skyblue4", fill = "skyblue1") +
+  theme_minimal()
+```
+
+```{r}
+kevin_unnested <- theoffice |>
+  filter(character == "Kevin") |>
+  unnest_tokens("words", input = "text") |>
+  relocate(words)
+
+kevin_unnested |> group_by(season) |>
+  summarise(n_word_spoken = n())
+## shows the total number of words for each season,
+## but, each season has a different number of episodes
+
+## what we could calculate instead is the average number of words per
+## episode in each season.
+```
