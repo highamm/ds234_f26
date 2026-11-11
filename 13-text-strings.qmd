@@ -85,11 +85,69 @@ kevin_unnested <- theoffice |>
   unnest_tokens("words", input = "text") |>
   relocate(words)
 
-kevin_unnested |> group_by(season) |>
+kevin_speak <- kevin_unnested |> group_by(season) |>
   summarise(n_word_spoken = n())
 ## shows the total number of words for each season,
 ## but, each season has a different number of episodes
 
 ## what we could calculate instead is the average number of words per
 ## episode in each season.
+
+## figure how many episodes there were in each season.
+episode_df <- theoffice |> group_by(season) |>
+  summarise(max_episode_number = max(episode))
+## join the data set with episodes per season with the data set we just created
+kevin_average <- inner_join(kevin_speak, episode_df, 
+                            join_by(season == season)) |>
+  mutate(words_per_episode = n_word_spoken / max_episode_number)
+
+## figure out the average per episode and make a line plot.
+ggplot(data = kevin_average, aes(x = season, y = words_per_episode)) +
+  geom_line() +
+  theme_minimal() +
+  lims(y = c(0, NA))
+```
+
+Your Turns
+
+Your Turn 1
+
+```{r}
+med_djok_df <- med_djok_df |>
+  mutate(serve_location = case_when(str_detect(point, "^4") ~ "wide",
+                                    str_detect(point, "^5") ~ "body",
+                                    str_detect(point, "^6") ~ "down the center")) |>
+  relocate(serve_location)
+```
+
+```{r}
+ggplot(data = med_djok_df, aes(x = serve_location)) +
+  geom_bar(colour = "seagreen4", fill = "seagreen1") +
+  facet_wrap(~ Serving) +
+  theme_minimal()
+```
+
+Your Turn 2.
+
+```{r}
+med_djok_df <- med_djok_df |> relocate(isSvrWinner) |>
+  mutate(isSvrWinner = factor(isSvrWinner))
+
+ggplot(data = med_djok_df, aes(x = serve_location)) +
+  geom_bar(aes(fill = isSvrWinner, group = isSvrWinner)) +
+  facet_wrap(~ Serving) +
+  theme_minimal()
+```
+
+Your Turn 3.
+
+```{r}
+med_djok_df |> 
+  mutate(is_volley = if_else(str_detect(point, "v") | str_detect(point, "z") |
+                               str_detect(point, "i") | str_detect(point, "k"),
+                             true = 1,
+                             false = 0)) |>
+  relocate(is_volley) |>
+  summarise(prop_volley = mean(is_volley))
+## 0.137 of all points in the match had a volley                             
 ```
