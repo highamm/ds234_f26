@@ -1,0 +1,153 @@
+---
+title: "Chapter 16: Databases and dbplyr"
+execute:
+  warning: false
+format: 
+  html:
+    fig-height: 4
+    embed-resources: true
+---
+
+## Section 16.1: Intro to SQL
+
+```{r}
+library(RSQLite)
+library(DBI) 
+library(dplyr)
+library(dbplyr)
+
+imdb_db <- dbConnect(RSQLite::SQLite(), 
+                     dbname = here::here("data/imdb_tv.sqlite"))
+
+dbListTables(conn = imdb_db)
+## imbd_db is a database with three different data frames
+
+dbListFields(conn = imdb_db, name = "episode_rating")
+## in SQL terminology, a "field" is a "variable."
+dbListFields(conn = imdb_db, name = "show_info")
+```
+
+```{r}
+library(tidyverse)
+
+sql <- "
+  SELECT parentTconst, averageRating, numVotes
+  FROM show_ratings 
+  WHERE numVotes > 100000
+"
+
+dbGetQuery(imdb_db, sql) |>
+  as_tibble()
+## Exercise 2
+## FROM just says to use the show_ratings data frame within the imbd_db 
+## WHERE is saying to filter(numVotes > 100000)
+
+## Exercise 1
+## returning any show where the numVotes is bigger than 100000
+## SELECT is saying to select(parentTconst, averageRating, numVotes)
+```
+
+## Section 16.2: Introduction `dbplyr`
+
+```{r}
+library(dbplyr)
+episode_rating_tbl <- tbl(imdb_db, "episode_rating")
+episode_rating_tbl
+## dbplyr operating on a database data table will not print the entire thing
+## (database tables are often too large to store in memory)
+
+## the path to the database is also printed
+```
+
+with `dbplyr`, can run  standard `dplyr` functions on a database table:
+
+```{r}
+episode_query1 <- episode_rating_tbl |> 
+  filter(averageRating > 9.0) |> 
+  select(parentTconst, Episode_Name, numVotes, averageRating)
+episode_query1
+
+episode_query1 |> collect() ## convert back to a standard tibble
+
+episode_query1 |>
+  show_query()
+## show the equivalent SQL code for a dbplyr query
+```
+
+```{r}
+mean_query1 <- episode_rating_tbl |>
+  group_by(parentTconst) |>
+  summarise(mean_rating = mean(averageRating)) |>
+  arrange(desc(mean_rating))
+mean_query1
+
+mean_query1 |> show_query()
+```
+
+Exercise 3.
+
+```{r}
+number_episode <- episode_rating_tbl |> group_by(parentTconst) |>
+  summarise(n_episode = n())
+number_episode |> show_query()
+## COUNT(*) AS `n_episode` is equivalent to summarise(n_episode = n())
+```
+
+## Section 16.3: SQL
+
+__SELECT__
+
+* SELECT in SQL matches to the following:
+    - `mutate()` 
+    - `select()`
+    - `rename()`
+    - `summarise()`
+    
+```{r}
+episode_rating_tbl |> select(1:4) |> show_query()
+
+episode_rating_tbl |> rename(show_id = parentTconst) |>
+  show_query()
+## `parentTconst` AS `show_id`
+
+episode_rating_tbl |> mutate(total_rating_points = averageRating * numVotes) |>
+  select(total_rating_points, parentTconst) |>
+  show_query()
+## SQL will translate a SELECT to mutate() if there is no summary function
+## involved
+episode_rating_tbl |> summarise(median_rating = median(averageRating)) |>
+  show_query()
+## SQL will translate a SELECT to summarise() if there is a summary function 
+## involved in the operation (median, min, max, mean, count, etc.)
+```
+
+* GROUP_BY in SQL matches to `group_by()` 
+
+* WHERE in SQL matches to `filter()`. but boolean operators are different: OR is |, AND is &.
+
+* ORDER BY in SQL matches to `arrange()`.
+
+Exercise 4.
+
+```{r}
+show_info_tbl <- tbl(imdb_db, "show_info")
+show_info_tbl |> filter(Show_Name == "Ozark") |>
+  show_query()
+```
+
+Class Exercise 1
+
+```{r}
+show_info_tbl |> rename(show_name = Show_Name) |>
+  arrange(desc(startYear)) |>
+  show_query()
+```
+
+Your Turn 1
+
+```{r}
+episode_rating_tbl |>
+  group_by(parentTconst) |> 
+  summarise(best_episode = max(averageRating)) |>
+  show_query()
+```
